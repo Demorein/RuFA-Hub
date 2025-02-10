@@ -1,0 +1,1 @@
+//Аддон для Arduino IDE для работы с RuFA Connect
