@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuFA Hub - Управление устройствами</title>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+    <header>
+        <h1>RuFA Hub - Управление устройствами</h1>
+    </header>
+
+    <div class="container">
+        <!-- Form for adding new device -->
+        <div class="form-container">
+            <h2>Добавить устройство</h2>
+            <form id="addDeviceForm">
+                <input type="text" id="ip" placeholder="IP устройства" required>
+                <input type="number" id="port" placeholder="Порт устройства" required>
+                <button type="submit">Добавить</button>
+            </form>
+            <div id="formAlert" class="alert"></div>
+        </div>
+
+        <!-- Table to display devices -->
+        <h2>Список устройств</h2>
+        <table id="devicesTable">
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Порт</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Device list will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="./main.js"></script>    
+</body>
+</html>
