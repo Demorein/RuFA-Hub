@@ -1,16 +1,3 @@
-<style type="text/css">
-h2 {
-    color:#ffffff;
-    background-color:#161c26;
-}
-
-body {
-    color:#ffffff
-}
-
-
-</style>
-
 <h2 align="center">MCIS (Microcontrollers Control and Interaction System) ⚡</h2>
 
 ## 1. Введение 📖
