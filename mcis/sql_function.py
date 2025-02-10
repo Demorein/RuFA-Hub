@@ -1,5 +1,5 @@
 import sqlite3
-import os
+from os import path
 
 class sql_func:
     def __init__(self, db_name):
@@ -12,7 +12,7 @@ class sql_func:
         
         self.db_name = db_name
         
-        if not os.path.exists(self.db_name):
+        if not path.exists(self.db_name):
             conn = sqlite3.connect(self.db_name)
             cursor = conn.cursor()
         
@@ -26,6 +26,7 @@ class sql_func:
             
             conn.commit()
             conn.close()
+
             
             
     def insert_host(self, ip, port):
@@ -47,8 +48,10 @@ class sql_func:
             cursor.execute("INSERT INTO hosts (ip, port) VALUES (?, ?)", (ip, port))
             conn.commit()
             conn.close()
+            return True
         else:
             conn.close()
+            return False
 
 
 
