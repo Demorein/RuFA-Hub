@@ -170,3 +170,6 @@ systemctl restart rufa-hub
 
 ## License
 Этот проект распространяется под MIT лицезией - смотрите [LICENSE](./LICENSE) для большей информации.
+
+HELLO IoT
+
