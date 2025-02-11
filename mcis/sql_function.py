@@ -3,7 +3,6 @@ from os import path
 
 class sql_func:
     def __init__(self, db_name):
-        
         self.db_name = db_name
         
         if not path.exists(self.db_name):
@@ -21,10 +20,7 @@ class sql_func:
             conn.commit()
             conn.close()
 
-            
-            
     def insert_host(self, ip, port):  
-        
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -40,9 +36,7 @@ class sql_func:
             conn.close()
             return False
 
-
     def delete_host(self, ip, port):
-        
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -52,19 +46,31 @@ class sql_func:
         if result[0] > 0:
             cursor.execute("DELETE FROM hosts WHERE ip = ? AND port = ?", (ip, port))
             conn.commit()
-            conn.close()
-        else:
-            conn.close()
-
-
-
+        
+        conn.close()
 
     def delete_all_hosts(self):
-
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
         cursor.execute("DELETE FROM hosts")
         conn.commit()
         conn.close()
-    
+
+    def show_all_hosts(self):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM hosts")
+        rows = cursor.fetchall()
+        
+        conn.close()
+
+        if not rows:
+            return "В таблице нет данных."
+
+        result = []
+        for row in rows:
+            result.append(f"id: {row[0]}, ip: {row[1]}, port: {row[2]}")
+        
+        return "\n".join(result)
