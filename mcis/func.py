@@ -35,5 +35,5 @@ def _datetime() -> str:
 
 def _elogs(log:str, ecode:int, v = "INFO", file = "errlog", pathh = path.basename(__file__)) -> str: 
     logg = f"\n{_datetime()} | {(v).upper()} | {__name__}:<{pathh}>:{ecode} - {log}"
-    with open(f"logs/{file}.log", "a", encoding='utf-8') as f:
+    with open(f"./mcis/logs/{file}.log", "a", encoding='utf-8') as f:
         f.write(logg)
