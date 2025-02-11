@@ -75,3 +75,17 @@ class sql_func:
             result.append(f"id: {row[0]}, ip: {row[1]}, port: {row[2]}, api: {row[3]}")
         
         return "\n".join(result)
+
+    def get_api_by_ip(self, ip):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT api FROM hosts WHERE ip = ?", (ip,))
+        result = cursor.fetchone()
+
+        conn.close()
+
+        if result:
+            return result[0]  # Возвращаем API-ключ
+        else:
+            return None  # Если IP не найден

@@ -5,6 +5,7 @@ import socket
 import config
 import sql_function
 import func
+import json
 
 db = sql_function.sql_func(config.database_name)
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,6 +25,9 @@ while True:
             server_socket.sendto(b"not Ok", client_address)
             func._elogs(f"Пользователь ip {client_address} уже зарегистрирован", ecode = 200)
             db.delete_all_hosts()
-    
+
+    elif db.get_api_by_ip(client_address[0]) == json.loads(message.decode())["api"]:
+        print("Успешная регистрация")
+
     else:
-        func._elogs(f"Не зарегестрированный пользователь ip {client_address}", ecode = 200)
+        func._elogs(f"Не авторизован ip {client_address}", ecode = 200)
