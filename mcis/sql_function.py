@@ -11,16 +11,17 @@ class sql_func:
         
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS hosts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ip TEXT NOT NULL,
-                port INTEGER NOT NULL
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ip TEXT NOT NULL,
+                    port INTEGER NOT NULL,
+                    api TEXT NOT NULL
                 )
             ''')
             
             conn.commit()
             conn.close()
 
-    def insert_host(self, ip, port):  
+    def insert_host(self, ip, port, api):  
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -28,7 +29,7 @@ class sql_func:
         result = cursor.fetchone()
 
         if result[0] == 0:
-            cursor.execute("INSERT INTO hosts (ip, port) VALUES (?, ?)", (ip, port))
+            cursor.execute("INSERT INTO hosts (ip, port, api) VALUES (?, ?, ?)", (ip, port, api))
             conn.commit()
             conn.close()
             return True
@@ -71,6 +72,6 @@ class sql_func:
 
         result = []
         for row in rows:
-            result.append(f"id: {row[0]}, ip: {row[1]}, port: {row[2]}")
+            result.append(f"id: {row[0]}, ip: {row[1]}, port: {row[2]}, api: {row[3]}")
         
         return "\n".join(result)

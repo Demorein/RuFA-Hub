@@ -1,5 +1,6 @@
 #MCIS Server
 
+import secrets
 import socket
 import config
 import sql_function
@@ -14,14 +15,15 @@ while True:
     print(message.decode())
 
     if message.decode() == "I Here!": 
-        if db.insert_host(client_address[0], 990):
+        if db.insert_host(client_address[0], 990, secrets.token_hex(16)):
             print(db.show_all_hosts())
             server_socket.sendto(b"OK", client_address)
             func._elogs(f"Пользователь ip {client_address} зарегистрирован", ecode = 200)
+
         else:
             server_socket.sendto(b"not Ok", client_address)
             func._elogs(f"Пользователь ip {client_address} уже зарегистрирован", ecode = 200)
             db.delete_all_hosts()
+    
     else:
-        print("NoNoNo")
         func._elogs(f"Не зарегестрированный пользователь ip {client_address}", ecode = 200)
