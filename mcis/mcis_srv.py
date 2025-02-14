@@ -26,7 +26,6 @@ class mcis_srv:
                 else:
                     self.server_socket.sendto(b"not Ok", client_address)
                     func._elogs(f"Пользователь ip {client_address} уже зарегистрирован", ecode = 200)
-                    self.db.delete_all_hosts()
 
             elif self.db.get_api_by_ip(client_address[0]) == json.loads(message.decode())["api"]:
                 print("Успешная регистрация")
