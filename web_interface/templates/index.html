@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCIS Data</title>
+</head>
+<body>
+    <h1 id="data">Ожидание данных...</h1>
+    <script>
+        function fetchData() {
+            fetch("/get_data")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("data").innerText = data.data;
+                })
+                .catch(error => console.error("Ошибка получения данных:", error));
+        }
+
+        setInterval(fetchData, 1000);
+    </script>
+</body>
+</html>

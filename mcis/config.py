@@ -1,4 +1,4 @@
 
 
-server_host:tuple = "192.168.203.53", 12345
+server_host:tuple = "127.0.0.1", 12345
 database_name:str = "dbdb.db" 
