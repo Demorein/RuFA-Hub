@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify
-from web_interface.data_handler import get_latest_data  # Правильный импорт из той же папки
+from web_interface.data_handler import get_latest_data
 
 app = Flask(__name__)
 
@@ -9,4 +9,4 @@ def index():
 
 @app.route("/get_data")
 def get_data():
-    return jsonify({"data": get_latest_data()})  # Отдаём последние данные
+    return jsonify({"data": get_latest_data()})
