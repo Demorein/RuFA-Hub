@@ -48,6 +48,7 @@ if __name__ == "__main__":
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
+        os.system("export FLASK_ENV=development")
         print("\n\n\nСервер остановлен пользователем")
         print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host}")
 
