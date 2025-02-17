@@ -3,6 +3,7 @@ import os
 import threading
 import queue
 import time
+from mcis.config import flask_host, server_host, flask_debug
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'web_interface')))
 
@@ -31,16 +32,25 @@ def process_data():
 data_thread = threading.Thread(target=process_data, daemon=True)
 
 def run_flask():
-    app.run(host="192.168.203.57", port=5001, debug=False, use_reloader=False)
+    app.run(host=f"{flask_host[0]}", port=flask_host[1], debug=flask_debug, use_reloader=False)
 
 if __name__ == "__main__":
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    try:
+
+        flask_thread = threading.Thread(target=run_flask, daemon=True)
 
 
-    flask_thread.start()
-    server_thread.start()
-    data_thread.start()
+        flask_thread.start()
+        server_thread.start()
+        data_thread.start()
 
 
-    while True:
-        time.sleep(1)
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\n\n\nСервер остановлен пользователем")
+        print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host}")
+
+    except Exception as e:
+        print(f"\n\n--- Ошибка! ---\n{e}")
+        print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host}")
