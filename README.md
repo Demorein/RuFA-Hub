@@ -206,3 +206,6 @@ systemctl restart rufa-hub
 
 HELLO IoT
 
+А я умею редактировать)))
+
+Строка @bobrovidnoe заблокированна
