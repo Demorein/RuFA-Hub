@@ -43,4 +43,3 @@ class mcis_srv:
             else:
                 func._elogs(f"Не авторизован ip {client_address}", ecode = 200)
 
-func._elogs(f"Сервер неожиданно завершил работу", ecode = 500, v="error")

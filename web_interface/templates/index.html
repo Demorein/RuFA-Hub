@@ -1,23 +1,148 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCIS Data</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCIS Data</title>
+  <style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #121212;
+        overflow-x: hidden; /* Убираем горизонтальную прокрутку */
+    }
+
+    /* Верхняя панель */
+    .top-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 95%;
+        height: 50px; /* Фиксированная высота */
+        background-color: #1E1E1E;
+        color: #fff;
+        padding: 10px 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100; /* На верхнем слое */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+
+    /* Панель навигации слева */
+    .sidebar {
+        position: fixed;
+        top: 50px; /* Панель начинается после верхней панели */
+        left: 0;
+        width: 250px;
+        height: calc(100vh - 50px); /* Учитываем высоту верхней панели */
+        background-color: #1E1E1E;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 20px;
+        z-index: 10;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #fff;
+        padding: 15px 20px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+        background-color: #1E1E1E;
+    }
+
+    /* Контент */
+    .content {
+        margin-left: 250px;
+        margin-top: 70px; /* Отступ вниз, чтобы не налезать на верхнюю панель */
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        display: flex;
+        flex-wrap: wrap; /* Перенос блоков на новую строку, если не хватает места */
+        gap: 20px;
+    }
+
+    /* Стиль для блоков с информацией */
+    .info-block {
+    display: inline-block; /* или оставить block, если не используется grid */
+    width: fit-content;
+    min-width: 300px; /* минимальное значение, если нужно */
+    background-color: #1E1E1E;
+    color: #E0E0E0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .info-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-block h2 {
+        margin-top: 0;
+        font-size: 24px;
+    }
+
+    .info-block p {
+        font-size: 16px;
+    }
+
+  </style>
 </head>
 <body>
-    <h1 id="data">Ожидание данных...</h1>
-    <script>
-        function fetchData() {
-            fetch("/get_data")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("data").innerText = data.data;
-                })
-                .catch(error => console.error("Ошибка получения данных:", error));
-        }
+  <!-- Верхняя панель -->
+  <div class="top-panel">
+    <div>Logo</div>
+    <div>Main</div>
+    <div>User</div>
+  </div>
 
-        setInterval(fetchData, 1000);
-    </script>
+  <!-- Панель навигации слева -->
+  <div class="sidebar">
+    <a href="#">Main</a>
+    <a href="#">System</a>
+    <a href="#">Controllers</a>
+  </div>
+
+  <!-- Контент -->
+  <div class="content">
+
+
+    <div class="info-block">
+      <h2>INFO 1</h2>
+      <p>Данные 1</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 2</h2>
+      <p>Данные 2</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 3</h2>
+      <p>Данные 3</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 4</h2>
+      <p>Данные 4</p>
+    </div>
+
+  </div>
+
+
 </body>
 </html>
