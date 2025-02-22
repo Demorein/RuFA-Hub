@@ -49,6 +49,7 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         os.system("export FLASK_ENV=development")
+        func._elogs(f"Сервер неожиданно завершил работу", ecode = 500, v="error")
         print("\n\n\nСервер остановлен пользователем")
         print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host}")
 

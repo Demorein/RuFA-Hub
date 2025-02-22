@@ -3,7 +3,7 @@
 import socket
 import json
 
-a = {"data":"datata","api":"ed5b041f2efdc50925e062f05565104e"}
+a = {"data":"123","api":"81065eb0a9542865c47320e6de3d6e3a"}
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
