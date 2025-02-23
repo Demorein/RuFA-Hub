@@ -36,17 +36,22 @@
     /* Панель навигации слева */
     .sidebar {
         position: fixed;
-        top: 50px; /* Панель начинается после верхней панели */
+        top: 50px; /* начинается ниже верхней панели */
         left: 0;
         width: 250px;
-        height: calc(100vh - 50px); /* Учитываем высоту верхней панели */
+        height: calc(100vh - 50px);
         background-color: #1E1E1E;
         color: #fff;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
         padding-top: 20px;
         z-index: 10;
+        transition: transform 0.3s ease; /* плавное перемещение */
+        transform: translateX(0); /* исходное положение */
+    }
+
+    .sidebar.hidden {
+        transform: translateX(-70%); /* сдвигаем панель полностью влево */
     }
 
     .sidebar a {
@@ -55,11 +60,21 @@
         padding: 15px 20px;
         font-size: 18px;
         transition: background-color 0.3s ease;
+        text-align: left;
     }
 
     .sidebar a:hover {
-        background-color: #1E1E1E;
+        background-color: #313131;
     }
+
+
+    .sidebar a .icon {
+        width: 30px;
+        height: 30px;
+        margin-left: 85%;
+        transform: translateY(-20px);
+    }
+    
 
     /* Контент */
     .content {
@@ -100,6 +115,8 @@
         font-size: 16px;
     }
 
+    
+
   </style>
 </head>
 <body>
@@ -112,9 +129,18 @@
 
   <!-- Панель навигации слева -->
   <div class="sidebar">
-    <a href="#">Main</a>
-    <a href="#">System</a>
-    <a href="#">Controllers</a>
+    <a href="#">
+      <span>Main</span>
+      <img src="{{ url_for('static', filename='icons/home.png') }}" alt="Icon" class="icon">
+    </a>
+    <a href="#">
+      <span>System</span>
+      <img src="{{ url_for('static', filename='icons/hardware.png') }}" alt="Icon" class="icon">
+    </a>
+    <a href="#">
+      <span>Controllers</span>
+      <img src="{{ url_for('static', filename='icons/controllers.png') }}" alt="Icon" class="icon">
+    </a>
   </div>
 
   <!-- Контент -->
@@ -143,6 +169,15 @@
 
   </div>
 
+  <button id="toggleSidebar">Toggle Sidebar</button>
+  <script>
+    const sidebar = document.querySelector('.sidebar');
+    const toggleButton = document.getElementById('toggleSidebar');
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
+  </script>
 
 </body>
 </html>
