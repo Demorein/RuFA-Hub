@@ -1,11 +1,14 @@
 # MCIS client
 
 import socket
+import json
 
-a = {"data":"datata","api":"9d3af19f2554e7ccd2839d09ff82283b"}
+a = {"data":"123","api":"81065eb0a9542865c47320e6de3d6e3a"}
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client_socket.sendto(a.encode(), ('127.0.0.1', 12345))
+
+client_socket.sendto(json.dumps(a).encode(), ('127.0.0.1', 12345))
+#client_socket.sendto("I Here!".encode(), ('127.0.0.1', 12345))
 print("I Here!")
 
 response, _ = client_socket.recvfrom(1024)
