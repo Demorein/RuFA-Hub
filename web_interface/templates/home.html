@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuFA Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-
+    
 </head>
 <body>
     
@@ -57,9 +57,8 @@
     <div class="info-block">
 
         <h2>Hardware</h2>
-        <p>CPU</p>
-        <p>GPU</p>
-        <p>RAM</p>
+        <p id="cpu">CPU</p>
+        <p id="ram">RAM</p>
         <p>DRIVE LOAD</p>
 
     </div>
@@ -83,6 +82,7 @@
 
   </div>
 
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 
 </body>
 </html>

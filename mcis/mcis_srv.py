@@ -2,9 +2,12 @@ import secrets
 import socket
 import json
 import queue
-import config
 import func
 import sql_function
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from config import config
 
 class mcis_srv:
     def __init__(self, data_queue):

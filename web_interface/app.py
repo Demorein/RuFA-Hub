@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, redirect, url_for
-from web_interface.data_handler import get_latest_data
+from web_interface.data_handler import get_latest_data, get_latest_hardware_data
 
 app = Flask(__name__)
 
@@ -18,3 +18,9 @@ def controllers():
 @app.route("/get_data")
 def get_data():
     return jsonify({"data": get_latest_data()})
+
+@app.route("/get_hardware_data")
+def get_hardware_data():
+    hd = get_latest_hardware_data()
+    #return jsonify({"CPU": 20, "RAM": 50})
+    return jsonify({"CPU": hd["CPU"], "RAM": hd["RAM"]})
