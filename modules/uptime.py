@@ -8,6 +8,7 @@ from web_interface import data_handler
 
 def uptime_parcer():
     while True:
+        time.sleep(50)
         uptime_seconds = time.time() - psutil.boot_time()
         uptime_str = f"{int(uptime_seconds // 3600)}h {int((uptime_seconds % 3600) // 60)}m"
         h, m = uptime_str.replace("h", "").replace("m", "").split()
