@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuFA Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicators.css') }}">
+
 </head>
 <body>
     
   <!-- Верхняя панель -->
   <div class="top-panel">
     <div>Logo</div>
-    <div>Main</div>
+    <div>Home</div>
     <div>User</div>
   </div>
 
@@ -32,57 +33,55 @@
 
   <div class="content">
 
-    <div class="info-block" style="width: 100%; max-width: 100%;">
 
-        <h2 style="text-align: center;">Здесь основная информация о системе</h2>
-        <p>Здесь можно увидеть:</p>
-        <p>Логи</p>
-        <p>Hardware</p>
-        <p>И т.д.</p>
+  <!-- Server block -->
+      <div class="info-block", style="width: 40%; height: 40%;">
+        <canvas id="NetworkUsage" width="400" height="200"></canvas>
 
-    </div>
-
-
-
-
-
-    <!-- Server block -->
-    <div class="info-block">
+        
         <h2>Server</h2>
-        <p>Server status</p>
-        <p>Host: ip:port</p>
+
+        <div class="server-status">
+          <span class="status-indicator"></span>
+          <span class="status-text">Сервер Онлайн</span>
+        </div>
+
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="flaskhost">Flask host: ip:port</p>
+        <p id="mcishost">MCIS host: ip:port</p>
+        </div>
+
         <p id="uptime">Uptime</p>
-    </div>
 
-    <div class="info-block">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="download">Download</p>
+        <p id="upload">Upload</p>
+        </div>
 
-        <h2>Hardware</h2>
-        <p id="cpu">CPU</p>
-        <p id="ram">RAM</p>
-        <p>DRIVE LOAD</p>
+      </div>
 
-    </div>
 
-    <div class="info-block">
 
-        <h2>Logs</h2>
-        <p>LOGS</p>
+      <div class="info-block", style="width: 40%; height: 50%;">
 
-    </div>
+            <canvas id="CpuUsage" style="width: 400; height: 400;"></canvas>
 
-    <div class="info-block">
-
-        <h2>Quick Actions</h2>
-        <p>Reboot</p>
-        <p>Clear Logs</p>
-        <p>Reload Web</p>
-
-    </div>
+            <h2>Hardware</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <p id="cpu">CPU</p>
+              <p id="ram">RAM</p>
+             </div>
+          
+      </div>
 
 
   </div>
 
+  <script src="{{ url_for('static', filename='chart.js') }}"></script>
   <script src="{{ url_for('static', filename='main.js') }}"></script>
+  <script src="{{ url_for('static', filename='cpu_usage.js') }}"></script>
+  <script src="{{ url_for('static', filename='network_usage.js') }}"></script>
 
 </body>
 </html>

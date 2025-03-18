@@ -1,0 +1,23 @@
+.server-status {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    background-color: #4CAF50; /* Зеленый для "онлайн" */
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 4px rgba(76, 175, 80, 0.8); }
+    50% { box-shadow: 0 0 12px rgba(76, 175, 80, 0.6); }
+    100% { box-shadow: 0 0 4px rgba(76, 175, 80, 0.8); }
+}
