@@ -25,7 +25,6 @@ function updateHardwareData() {
             // Обновляем текст элемента <p> с id "ram-info", вставляя туда данные об используемой RAM
             document.getElementById("ram").innerText = "RAM: " + data.RAM + " %";
         })
-        .catch(error => console.error("Ошибка загрузки данных:", error)); // Вывод ошибки в консоль, если запрос не удался
 }
 
 
@@ -39,15 +38,41 @@ function updateUptimeData() {
             // Обновляем текст элемента <p> с id "cpu-info", вставляя туда данные о загрузке CPU
             document.getElementById("uptime").innerText = "Uptime: " + data.h + " " + data.m;
         })
-        .catch(error => document.getElementById("uptime").innerText = "Uptime: Нет данных"); // Вывод ошибки в консоль, если запрос не удался
 }
 
 
+function updateHostsData() {
+    // Отправляем GET-запрос к серверу по маршруту "/get_hardware_data"
+    fetch("/get_hosts_data")
+        .then(response => response.json())  // Преобразуем полученный ответ в JSON
+        .then(data => {
+            // Обновляем текст элемента <p> с id "cpu-info", вставляя туда данные о загрузке CPU
+            document.getElementById("flaskhost").innerText = "Flask Host: " + data.flhost;
+            document.getElementById("mcishost").innerText = "MCIS Host: " + data.srvhost;
+        })
+}
 
+
+function updateNetworkData() {
+    // Отправляем GET-запрос к серверу по маршруту "/get_hardware_data"
+    fetch("/get_network_data")
+        .then(response => response.json())  // Преобразуем полученный ответ в JSON
+        .then(data => {
+            // Обновляем текст элемента <p> с id "cpu-info", вставляя туда данные о загрузке CPU
+            document.getElementById("download").innerText = "Download: " + data.download;
+            document.getElementById("upload").innerText = "Upload: " + data.upload;
+        })
+}
+
+//mainloop modules
 // Устанавливаем автоматическое обновление данных каждые 5 секунд (5000 миллисекунд)
 setInterval(updateHardwareData, 5000);
 setInterval(updateUptimeData, 60000);
+setInterval(updateNetworkData, 1000)
+//start
 // Вызываем функцию сразу после загрузки страницы, чтобы данные отобразились без ожидания
+updateNetworkData
+updateHostsData();
 updateHardwareData();
 updateUptimeData();
 

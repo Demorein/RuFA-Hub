@@ -4,7 +4,8 @@ import json
 harware_data = {"CPU": "Нет данных", "RAM": "Нет данных"}
 uptime_data = {"h": "Нет данных", "m": "Нет данных"}
 latest_data = {"data": "Ожидание данных..."}
-
+hosts = {"flhost": "Нет данных", "srvhost": "Нет данных"}
+network_data = {"download": "Нет данных", "upload": "Нет данных"}
 
 #######--------------UPDATE
 
@@ -26,6 +27,17 @@ def update_uptime_data(new_data):
     update_data = {"h":new_data["h"], "m":new_data["m"]}
 
 
+def update_host_data(new_data):
+    global hosts
+    flhost = new_data[0]
+    srvhost = new_data[1]
+    hosts = {"flhost": flhost, "srvhost": srvhost}
+
+
+def update_network_data(new_data):
+    global network_data
+    network_data = {"download": new_data["download"], "upload": new_data["upload"]}
+
 
 #######--------------GET
 
@@ -40,3 +52,11 @@ def get_latest_hardware_data():
 
 def get_latest_uptime_data():
     return update_data
+
+
+def get_latest_host_data():
+    return hosts
+
+
+def get_latest_network_data():
+    return network_data

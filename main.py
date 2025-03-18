@@ -3,10 +3,12 @@ import os
 import threading
 import queue
 import time
-# -----------Modules--------------
-import modules.hardware_monitor #|
-import modules.uptime           #|
-#---------------------------------
+# ----------------------Modules------------------------|
+import modules.hardware_monitor                       #|
+import modules.uptime                                 #|
+from modules.hosts import hosts                       #|
+from modules.network_monitor import get_network_load  #|
+#------------------------------------------------------|
 
 from config.config import flask_host, server_host, flask_debug
 import psutil
@@ -47,15 +49,22 @@ if __name__ == "__main__":
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
         uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
+        network_data = threading.Thread(target=get_network_load, daemon=True)
+
+
+        #Modules
+        hosts(flask_host, server_host)
+        network_data.start()
+        hardware_pars.start()
+        uptime_pars.start()
+
 
         #Main service
         flask_thread.start()
         server_thread.start()
         #data_thread.start()
 
-        #Modules
-        hardware_pars.start()
-        uptime_pars.start()
+        
 
 
         while True:
