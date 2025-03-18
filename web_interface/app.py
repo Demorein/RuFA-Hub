@@ -1,11 +1,19 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, redirect, url_for
 from web_interface.data_handler import get_latest_data
 
 app = Flask(__name__)
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def home_redirect():
+    return redirect(url_for("home"))
+
+@app.route("/home")
+def home():
+    return render_template("home.html")
+
+@app.route("/controllers")
+def controllers():
+    return render_template("controllers.html")
 
 @app.route("/get_data")
 def get_data():

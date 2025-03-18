@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuFA Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+</head>
+<body>
+    
+  <!-- Верхняя панель -->
+  <div class="top-panel">
+    <div>Logo</div>
+    <div>Main</div>
+    <div>User</div>
+  </div>
+
+  <!-- Панель навигации слева -->
+  <div class="sidebar">
+    <a href="home">
+      <span>Home</span>
+    </a>
+    <a href="system">
+      <span>System</span>
+    </a>
+    <a href="controllers">
+      <span>Controllers</span>
+    </a>
+  </div>
+
+
+  <div class="content">
+
+    <div class="info-block" style="width: 100%; max-width: 100%;">
+
+        <h2 style="text-align: center;">Здесь основная информация о системе</h2>
+        <p>Здесь можно увидеть:</p>
+        <p>Логи</p>
+        <p>Hardware</p>
+        <p>И другую хуйню</p>
+
+    </div>
+
+
+
+
+
+    <!-- Server block -->
+    <div class="info-block">
+        <h2>Server</h2>
+        <p>Server status</p>
+        <p>Host: ip:port</p>
+        <p>Uptime</p>
+    </div>
+
+    <div class="info-block">
+
+        <h2>Hardware</h2>
+        <p>CPU</p>
+        <p>GPU</p>
+        <p>RAM</p>
+        <p>DRIVE LOAD</p>
+
+    </div>
+
+    <div class="info-block">
+
+        <h2>Logs</h2>
+        <p>LOGS</p>
+
+    </div>
+
+    <div class="info-block">
+
+        <h2>Quick Actions</h2>
+        <p>Reboot</p>
+        <p>Clear Logs</p>
+        <p>Reload Web</p>
+
+    </div>
+
+
+  </div>
+
+
+</body>
+</html>
