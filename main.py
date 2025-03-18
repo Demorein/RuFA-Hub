@@ -3,7 +3,10 @@ import os
 import threading
 import queue
 import time
-from mcis.config import flask_host, server_host, flask_debug
+import modules.hardware_monitor
+from config.config import flask_host, server_host, flask_debug
+import psutil
+import mcis.func
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'web_interface')))
 
@@ -38,11 +41,13 @@ if __name__ == "__main__":
     try:
 
         flask_thread = threading.Thread(target=run_flask, daemon=True)
+        hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
 
 
         flask_thread.start()
         server_thread.start()
         data_thread.start()
+        hardware_pars.start()
 
 
         while True:
