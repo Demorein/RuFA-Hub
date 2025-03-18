@@ -3,7 +3,11 @@ import os
 import threading
 import queue
 import time
-import modules.hardware_monitor
+# -----------Modules--------------
+import modules.hardware_monitor #|
+import modules.uptime           #|
+#---------------------------------
+
 from config.config import flask_host, server_host, flask_debug
 import psutil
 import mcis.func
@@ -42,12 +46,16 @@ if __name__ == "__main__":
 
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
+        uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
 
-
+        #Main service
         flask_thread.start()
         server_thread.start()
-        data_thread.start()
+        #data_thread.start()
+
+        #Modules
         hardware_pars.start()
+        uptime_pars.start()
 
 
         while True:
