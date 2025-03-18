@@ -39,7 +39,7 @@ function updateUptimeData() {
             // Обновляем текст элемента <p> с id "cpu-info", вставляя туда данные о загрузке CPU
             document.getElementById("uptime").innerText = "Uptime: " + data.h + " " + data.m;
         })
-        .catch(error => console.error("Ошибка загрузки данных:", error)); // Вывод ошибки в консоль, если запрос не удался
+        .catch(error => document.getElementById("uptime").innerText = "Uptime: Нет данных"); // Вывод ошибки в консоль, если запрос не удался
 }
 
 
