@@ -5,19 +5,22 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from web_interface import data_handler
+import sql
 
+db = sql.SQL("dbdb.db")
 
 def get_system_info():
     while True:
-        time.sleep(0.1)
-        cpu_usage = psutil.cpu_percent(interval=1)
-        ram_info = psutil.virtual_memory()
-        ram_usage = ram_info.percent
+        try:
+            cpu_usage = psutil.cpu_percent(interval=1)
+            ram_usage = psutil.virtual_memory().percent
 
-        data = {
-            "CPU": f"{cpu_usage}",
-            "RAM": f"{ram_usage}"
-        }
+            # Два отдельных запроса
+            db.write("settings", data={"key": "CPU", "value": f"{cpu_usage}"})
+            db.write("settings", data={"key": "RAM", "value": f"{ram_usage}"})
 
-        data_handler.update_hardware_data(data)
-        
+            # Обновление интерфейса
+            data_handler.update_hardware_data()
+
+        except Exception as e:
+            db.write("logs", data={"log_message": f"Ошибка в get_system_info: {str(e)}"}, log_level="ERROR")

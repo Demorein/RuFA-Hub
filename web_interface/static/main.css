@@ -94,6 +94,18 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.info-block-static {
+    display: inline-block; /* или оставить block, если не используется grid */
+    width: fit-content;
+    min-width: 300px; /* минимальное значение, если нужно */
+    background-color: #1E1E1E;
+    color: #E0E0E0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
 .info-block:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -107,3 +119,4 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
 .info-block p {
     font-size: 16px;
 }
+

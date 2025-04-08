@@ -9,6 +9,23 @@ network_data = {"download": "Нет данных", "upload": "Нет данны�
 
 #######--------------UPDATE
 
+# class Data:
+#     def __init__(self, hard_data:dict, up_data:dict, latest_data:dict, hosts:dict, nw_data:dict):
+#         self.harware_data = {"CPU": "Нет данных", "RAM": "Нет данных"}
+#         self.latest_date = {"data": "Ожидание данных..."} 
+    
+#     def __update__(self):
+#         self.update()
+
+#     def update(self):
+#         if isinstance(new_data, dict) and "data" in new_data:
+#             self.latest_date = {"data": new_data["data"]}  # Записываем только ключ "data"
+#         else:
+#             self.latest_date = {"data": "Некорректные данные"}  # Обработка ошибки
+
+# #data = Date()
+# #date.update()
+
 def update_data(new_data):
     global latest_data
     if isinstance(new_data, dict) and "data" in new_data:
