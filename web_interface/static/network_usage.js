@@ -24,7 +24,7 @@ const networkChart = new Chart(netCtx, {
         animation: false,
         responsive: true,
         scales: {
-            y: { min: 0, max: 100 }
+            y: { min: 0, max: 300 }
         }
     }
 });

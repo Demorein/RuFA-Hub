@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manipulator</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .main-table {
+            width: 360px;
+            height: 360px;
+            border-collapse: collapse;
+            background-color: #1E1E1E;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .main-table td {
+            width: 16.66%;
+            height: 16.66%;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #2C2C2C;
+        }
+
+        .main-table button {
+            width: 90%;
+            height: 90%;
+            font-size: 14px;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .main-table button:hover {
+            background-color: #3D3D3D;
+        }
+
+        .small-table {
+            width: 120px;
+            height: 180px;
+            border-collapse: collapse;
+            background-color: #1E1E1E;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .small-table td {
+            width: 50%;
+            height: 33.33%;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #2C2C2C;
+        }
+
+        .small-table button {
+            width: 90%;
+            height: 90%;
+            font-size: 12px;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .small-table button:hover {
+            background-color: #3D3D3D;
+        }
+
+        .bottom-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .bottom-buttons button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .bottom-buttons button:hover {
+            background-color: #3D3D3D;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Левая маленькая таблица -->
+    
+
+    <!-- Основная квадратная таблица -->
+    <table class="main-table">
+        <tbody>
+            <tr><td><button onclick="sendRequest('A1')">A1</button></td><td><button onclick="sendRequest('A2')">A2</button></td><td><button onclick="sendRequest('A3')">A3</button></td><td><button onclick="sendRequest('A4')">A4</button></td><td><button onclick="sendRequest('A5')">A5</button></td><td><button onclick="sendRequest('A6')">A6</button></td></tr>
+            <tr><td><button onclick="sendRequest('B1')">B1</button></td><td><button onclick="sendRequest('B2')">B2</button></td><td><button onclick="sendRequest('B3')">B3</button></td><td><button onclick="sendRequest('B4')">B4</button></td><td><button onclick="sendRequest('B5')">B5</button></td><td><button onclick="sendRequest('B6')">B6</button></td></tr>
+            <tr><td><button onclick="sendRequest('C1')">C1</button></td><td><button onclick="sendRequest('C2')">C2</button></td><td><button onclick="sendRequest('C3')">C3</button></td><td><button onclick="sendRequest('C4')">C4</button></td><td><button onclick="sendRequest('C5')">C5</button></td><td><button onclick="sendRequest('C6')">C6</button></td></tr>
+            <tr><td><button onclick="sendRequest('D1')">D1</button></td><td><button onclick="sendRequest('D2')">D2</button></td><td><button onclick="sendRequest('D3')">D3</button></td><td><button onclick="sendRequest('D4')">D4</button></td><td><button onclick="sendRequest('D5')">D5</button></td><td><button onclick="sendRequest('D6')">D6</button></td></tr>
+            <tr><td><button onclick="sendRequest('E1')">E1</button></td><td><button onclick="sendRequest('E2')">E2</button></td><td><button onclick="sendRequest('E3')">E3</button></td><td><button onclick="sendRequest('E4')">E4</button></td><td><button onclick="sendRequest('E5')">E5</button></td><td><button onclick="sendRequest('E6')">E6</button></td></tr>
+            <tr><td><button onclick="sendRequest('F1')">F1</button></td><td><button onclick="sendRequest('F2')">F2</button></td><td><button onclick="sendRequest('F3')">F3</button></td><td><button onclick="sendRequest('F4')">F4</button></td><td><button onclick="sendRequest('F5')">F5</button></td><td><button onclick="sendRequest('F6')">F6</button></td></tr>
+        </tbody>
+    </table>
+
+    <!-- Правая маленькая таблица -->
+</div>
+
+
+<script>
+    function sendRequest(buttonName) {
+        fetch('/get_button', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ button: buttonName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Ответ сервера:', data);
+        })
+        .catch(error => {
+            console.error('Ошибка запроса:', error);
+        });
+    }
+
+    document.getElementById('btn-up').addEventListener('click', () => sendRequest('Подняться'));
+    document.getElementById('btn-down').addEventListener('click', () => sendRequest('Опуститься'));
+</script>
+
+</body>
+</html>

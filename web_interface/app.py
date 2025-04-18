@@ -1,5 +1,8 @@
-from flask import Flask, render_template, jsonify, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from web_interface.data_handler import get_latest_data, get_latest_hardware_data, get_latest_uptime_data, get_latest_host_data, get_latest_network_data
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from modules.iot_module import iot_man
 
 app = Flask(__name__)
 
@@ -15,6 +18,9 @@ def home():
 def controllers():
     return render_template("controllers.html")
 
+@app.route("/manipulator")
+def manipulator():
+    return render_template("manipulator.html")
 
 #---------------------------------------------------------------
 # URL REQUESTS
@@ -43,3 +49,29 @@ def get_host_data():
 def get_network_data():
     network_data = get_latest_network_data()
     return jsonify({"download": network_data["download"], "upload": network_data["upload"]})
+
+@app.route("/get_button", methods=["POST"])
+def get_button():
+    # try:
+        # Получаем данные из тела запроса (предположим, что это JSON)
+        data = request.get_json()
+        app.logger.debug(f"Received data: {data}")  # Логируем полученные данные для отладки
+        obj = iot_man()
+        obj.decode_message_for_iot_robots(data)
+
+
+        # Проверяем, есть ли данные и ключ "button"
+        if data and 'button' in data:
+            button_name = data['button']
+            app.logger.debug(f"Button clicked: {button_name}")  # Логируем, что кнопка была нажата
+
+            # Возвращаем успешный ответ с данными кнопки
+            return jsonify({"status": "success", "message": f"Button {button_name} clicked"}), 200
+        else:
+            # Если данных нет или они некорректные, возвращаем ошибку
+            app.logger.error("Invalid data or missing 'button' key")  # Логируем ошибку
+            return jsonify({"status": "error", "message": "Invalid data"}), 400
+    # except Exception as e:
+    #     # Логируем исключение, если оно произошло
+    #     app.logger.error(f"Error occurred: {str(e)}")
+    #     return jsonify({"status": "error", "message": str(e)}), 500
