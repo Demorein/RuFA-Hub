@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuFA Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicators.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='buttons.css') }}">
+
+  <style>
+    .a-b{
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      gap: 50px;
+    }
+  </style>
+
+</head>
+<body>
+    
+  <!-- Верхняя панель -->
+  <div class="top-panel">
+    <div>Logo</div>
+    <div>Home</div>
+    <div>User</div>
+  </div>
+
+  <!-- Панель навигации слева -->
+  <div class="sidebar">
+    <a href="home">
+      <span>Home</span>
+    </a>
+    <a href="controllers">
+      <span>Controllers</span>
+    </a>
+  </div>
+
+
+  <div class="content">
+
+
+  <!-- Server block -->
+      <div class="info-block", style="width: 40%; height: 40%;">
+        <canvas id="NetworkUsage" width="400" height="200"></canvas>
+
+        
+        <h2>SERVER</h2>
+
+          <div class="a-b">
+
+          <div class="server-status">
+            <span class="status-indicator"></span>
+            <span class="status-text">Flask Server Online</span>
+          </div>
+
+          <div class="server-status">
+            <span class="status-indicator"></span>
+            <span class="status-text">MCIS Server Online</span>
+          </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="flaskhost">Flask host: ip:port</p>
+        <p id="mcishost">MCIS host: ip:port</p>
+        </div>
+
+        <p id="uptime">Uptime</p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="download">Download</p>
+        <p id="upload">Upload</p>
+        </div>
+
+      </div>
+
+      <!--SYSTEM-BLOCK-->
+      <div class="info-block", style="width: 50%; height: 100%;">
+
+        <h2>SYSTEM INFO</h2>
+        <div class="info-block-static", style="background-color: #181818; width: 95%;">
+          <h2>OPERATING SYSTEM</h2>
+          
+          <!--System-->
+          <div class="a-b">
+            <p>System</p>
+            <p id="sys_name">system_name</p>
+          </div>
+
+          <!--Version-->
+          <div class="a-b">
+            <p>Version</p>
+            <p id="sys_version">system_version</p>
+          </div>
+
+          <!--Release-->
+          <div class="a-b">
+            <p>Release</p>
+            <p id="sys_release">system_release</p>
+          </div>
+          
+          <!--Full-Name-->
+          <div class="a-b">
+            <p>Full name</p>
+            <p id="sys_fullname">system_full_name</p>
+          </div>
+        </div>
+
+        <div class="info-block-static", style="background-color: #181818; margin-top: 20px; width: 95%; height: 50%;">
+          <h2>SYSTEM CONTROL</h2>
+        
+        <div class="a-b">
+
+        <label class="switch" style="transform: scale(0.8);">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+        <p>MCIS Server</p>
+        <p style="color: #4CAF50; font-weight: bold; font-size: 18;">Active</p>
+        <p></p>
+        
+        
+        <p></p>
+        </div>
+
+      </div>
+        </div>
+
+
+      <!--CPU USEGE-->
+      <div class="info-block", style="width: 40%; height: 50%;">
+
+            <canvas id="CpuUsage" style="width: 400; height: 400;"></canvas>
+
+            <h2>HARDWARE</h2>
+            <div class="a-b">
+              <p id="cpu">CPU</p>
+              <p id="ram">RAM</p>
+             </div>
+      </div>
+
+        </div>
+
+      </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+  <script src="{{ url_for('static', filename='cpu_usage.js') }}"></script>
+  <script src="{{ url_for('static', filename='network_usage.js') }}"></script>
+
+</body>
+</html>

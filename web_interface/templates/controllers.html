@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuFA Hub</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <!-- Верхняя панель -->
+  <div class="top-panel">
+    <div>Logo</div>
+    <div>Controllers</div>
+    <div>User</div>
+  </div>
+
+  <!-- Панель навигации слева -->
+  <div class="sidebar">
+    <a href="home">
+      <span>Home</span>
+    </a>
+    <a href="controllers">
+      <span>Controllers</span>
+    </a>
+  </div>
+
+  <!-- Контент -->
+  <div class="content">
+
+
+    <div class="info-block">
+      <h2>INFO 1</h2>
+      <p>Данные 1</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 2</h2>
+      <p>Данные 2</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 3</h2>
+      <p>Данные 3</p>
+    </div>
+
+    <div class="info-block">
+      <h2>INFO 4</h2>
+      <p>Данные 4</p>
+    </div>
+
+  </div>
+
+  <button id="toggleSidebar">Toggle Sidebar</button>
+  <script>
+    const sidebar = document.querySelector('.sidebar');
+    const toggleButton = document.getElementById('toggleSidebar');
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+</html>

@@ -37,3 +37,21 @@ def _elogs(log:str, ecode:int, v = "INFO", file = "errlog", pathh = path.basenam
     logg = f"\n{_datetime()} | {(v).upper()} | {__name__}:<{pathh}>:{ecode} - {log}"
     with open(f"./mcis/logs/{file}.log", "a", encoding='utf-8') as f:
         f.write(logg)
+
+
+
+# RuFA-Hub
+# Copyright (C) 2025 Gromov Evgeniy Vyacheslavovich
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License version 2 for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
