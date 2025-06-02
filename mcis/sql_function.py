@@ -5,21 +5,20 @@ class sql_func:
     def __init__(self, db_name):
         self.db_name = db_name
         
-        if not path.exists(self.db_name):
-            conn = sqlite3.connect(self.db_name)
-            cursor = conn.cursor()
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+    
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS hosts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip TEXT NOT NULL,
+                port INTEGER NOT NULL,
+                api TEXT NOT NULL
+            )
+        ''')
         
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS hosts (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    ip TEXT NOT NULL,
-                    port INTEGER NOT NULL,
-                    api TEXT NOT NULL
-                )
-            ''')
-            
-            conn.commit()
-            conn.close()
+        conn.commit()
+        conn.close()
 
     def insert_host(self, ip, port, api):  
         conn = sqlite3.connect(self.db_name)
@@ -89,3 +88,22 @@ class sql_func:
             return result[0]  # Возвращаем API-ключ
         else:
             return None  # Если IP не найден
+        
+
+
+
+# RuFA-Hub
+# Copyright (C) 2025 Gromov Evgeniy Vyacheslavovich
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License version 2 for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.

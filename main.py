@@ -3,6 +3,8 @@ import os
 import threading
 import queue
 import time
+import mcis.func
+
 # ----------------------Modules------------------------|
 import modules.hardware_monitor                       #|
 import modules.uptime                                 #|
@@ -10,8 +12,10 @@ from modules.hosts import hosts                       #|
 from modules.network_monitor import get_network_load  #|
 #------------------------------------------------------|
 
-from config.config import flask_host, server_host, flask_debug
-import psutil
+#-----------------------------Config---------------------------------|
+from config.config import flask_host, server_host_udp, flask_debug  #|
+#--------------------------------------------------------------------|
+
 import mcis.func
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'web_interface')))
@@ -21,20 +25,25 @@ from web_interface.data_handler import update_data
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'mcis')))
 from mcis.mcis_srv import mcis_srv
+from mcis.mcis_srv_tcp import mcis_srv_tcp
 
+# Queue
 data_queue = queue.Queue()
+MSTB_queue = queue.Queue()
 
+# TCP/UDP Servers queue
 server = mcis_srv(data_queue)
+server_tcp = mcis_srv_tcp(data_queue)
 server_thread = threading.Thread(target=server.start_mcis_srv, daemon=True)
+server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_srv, daemon=True)
 
+#Data Parser
 def process_data():
     while True:
         try:
             data = data_queue.get(timeout=1)
             print("Получены данные из MCIS:", data)
-
             update_data(data)
-
         except queue.Empty:
             continue
 
@@ -51,9 +60,8 @@ if __name__ == "__main__":
         uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
         network_data = threading.Thread(target=get_network_load, daemon=True)
 
-
         #Modules
-        hosts(flask_host, server_host)
+        hosts(flask_host, server_host_udp)
         network_data.start()
         hardware_pars.start()
         uptime_pars.start()
@@ -62,7 +70,9 @@ if __name__ == "__main__":
         #Main service
         flask_thread.start()
         server_thread.start()
-        #data_thread.start()
+        server_thread_tcp.start()
+
+        data_thread.start()
 
         
 
@@ -71,10 +81,31 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         os.system("export FLASK_ENV=development")
-        func._elogs(f"Сервер неожиданно завершил работу", ecode = 500, v="error")
-        print("\n\n\nСервер остановлен пользователем")
-        print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host}")
+        mcis.func._elogs(f"The server unexpectedly completed the work", ecode = 500, v="error")
+        print("\n\n\nThe server is stopped by the user")
+        print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
 
     except Exception as e:
-        print(f"\n\n--- Ошибка! ---\n{e}")
-        print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host}")
+        print(f"\n\n--- Error! ---\n\n{e}")
+        print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
+
+
+
+
+
+# RuFA-Hub
+# Copyright (C) 2025 Gromov Evgeniy Vyacheslavovich
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License version 2 for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
