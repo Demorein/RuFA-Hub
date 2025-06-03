@@ -3,8 +3,7 @@ import os
 import threading
 import queue
 import time
-import asyncio
-import mcis.func
+import core
 
 # ----------------------Modules------------------------|
 import modules.hardware_monitor                       #|
@@ -17,8 +16,6 @@ from modules.network_monitor import get_network_load  #|
 from config.config import flask_host, server_host_udp, flask_debug  #|
 #--------------------------------------------------------------------|
 
-import mcis.func
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'web_interface')))
 
 from web_interface.app import app
@@ -28,9 +25,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'mcis'))
 from mcis.mcis_srv import mcis_srv
 from mcis.mcis_srv_tcp import mcis_srv_tcp
 
+Logger = core.Logger(__name__, "logs/main.log")
+Logger.error("123")
+Logger.critical("123")
+Logger.debug("123")
 # Queue
 data_queue = queue.Queue()
 MSTB_queue = queue.Queue()
+Logger.info("Initialization queue")
 
 # TCP/UDP Servers queue
 server = mcis_srv(data_queue)
@@ -43,19 +45,23 @@ def process_data():
     while True:
         try:
             data = data_queue.get(timeout=1)
-            print("Получены данные из MCIS:", data)
+            Logger.info(f"Data from MCIS: {data}")
             update_data(data)
         except queue.Empty:
             continue
 
 data_thread = threading.Thread(target=process_data, daemon=True)
+Logger.info("Initialization of basic flows")
 
 def run_flask():
     app.run(host=f"{flask_host[0]}", port=flask_host[1], debug=flask_debug, use_reloader=False)
 
 if __name__ == "__main__":
-    try:
 
+    Logger.info("Launch of basic flows")
+
+    try:
+        Logger.info("Initialization of basic modules")
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
         uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
@@ -66,7 +72,7 @@ if __name__ == "__main__":
         network_data.start()
         hardware_pars.start()
         uptime_pars.start()
-
+        Logger.info("Launch of basic modules")
 
         #Main service
         flask_thread.start()
@@ -75,20 +81,21 @@ if __name__ == "__main__":
 
         data_thread.start()
 
-        
+        Logger.info("Launch of the main flows")
 
 
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         os.system("export FLASK_ENV=development")
-        mcis.func._elogs(f"The server unexpectedly completed the work", ecode = 500, v="error")
+
         print("\n\n\nThe server is stopped by the user")
         print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
-
+        Logger.info("The server is stopped by the user")
     except Exception as e:
         print(f"\n\n--- Error! ---\n\n{e}")
         print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
+        Logger.critical(e)
 
 
 

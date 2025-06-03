@@ -1,0 +1,11 @@
+2025-06-04 03:05:45,238 | ERROR | __main__ | 123
+2025-06-04 03:05:45,238 | CRITICAL | __main__ | 123
+2025-06-04 03:05:45,240 | DEBUG | __main__ | 123
+2025-06-04 03:05:45,241 | ERROR | __main__ | 123
+NoneType: None
+2025-06-04 03:05:45,242 | INFO | __main__ | Initialization queue
+2025-06-04 03:05:45,250 | INFO | __main__ | Initialization of basic flows
+2025-06-04 03:05:45,251 | INFO | __main__ | Launch of basic flows
+2025-06-04 03:05:45,252 | INFO | __main__ | Initialization of basic modules
+2025-06-04 03:05:45,276 | INFO | __main__ | Launch of basic modules
+2025-06-04 03:05:45,278 | INFO | __main__ | Launch of the main flows

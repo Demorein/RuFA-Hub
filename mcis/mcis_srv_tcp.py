@@ -3,7 +3,6 @@ import socket
 import json
 import queue
 import threading
-import func
 import sql_function
 import sys
 import os
@@ -11,11 +10,11 @@ import os
 # Добавляем путь к config
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config
+import core
 
 class mcis_srv_tcp:
     def __init__(self, data_queue):
-        print("TCP-сервер стартует...1")
-        func._elogs(f"TCP Сервер запущен", ecode=200)
+        self.Logger = core.Logger(__name__, "logs/mcis_tcp.log")
 
         self.db = sql_function.sql_func(config.database_name)  # Класс работы с базой
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,15 +23,13 @@ class mcis_srv_tcp:
         self.data_queue = data_queue
 
     def handle_client(self, client_socket, client_address):
-        func._elogs(f"Подключен клиент {client_address}", ecode=200)
-        print("TCP-сервер стартует...2")
 
         buffer = b""
         try:
             while True:
                 data = client_socket.recv(4096)
                 if not data:
-                    func._elogs(f"Клиент {client_address} отключился", ecode=200)
+                    self.Logger.info(f"Client {client_address} disconnected")
                     break
                 buffer += data
 
@@ -44,43 +41,43 @@ class mcis_srv_tcp:
                         if self.db.insert_host(client_address[0], 990, secrets.token_hex(16)):
                             print(self.db.show_all_hosts())
                             client_socket.sendall(b"OK\n")
-                            func._elogs(f"Пользователь ip {client_address} зарегистрирован", ecode=200)
+                            self.Logger.info(f"Client {client_address} registered")
                         else:
                             client_socket.sendall(b"not Ok\n")
-                            func._elogs(f"Пользователь ip {client_address} уже зарегистрирован", ecode=200)
+                            self.Logger.info(f"User IP {client_address} is already registered")
                     else:
                         try:
                             data_json = json.loads(message)
                         except json.JSONDecodeError:
-                            func._elogs(f"Ошибка JSON от {client_address}", ecode=400)
+                            self.Logger.error(f"JSON Error from {client_address}")
                             client_socket.sendall(b"Invalid JSON\n")
                             continue
 
                         api_from_db = self.db.get_api_by_ip(client_address[0])
                         if api_from_db == data_json.get("api"):
-                            print("Успешная авторизация")
-                            func._elogs(f"Авторизован ip {client_address}", ecode=200)
+                            self.Logger.info(f"Authorized IP {client_address}")
                             self.data_queue.put(data_json)
                             client_socket.sendall(b"Data received\n")
                         else:
-                            func._elogs(f"Не авторизован ip {client_address}", ecode=403)
+                            self.Logger.info(f"Unauthorized ip {client_address}")
                             client_socket.sendall(b"Unauthorized\n")
 
         except Exception as e:
-            func._elogs(f"Ошибка при обработке клиента {client_address}: {e}", ecode=500)
+            self.Logger.exception(f"Client processing error with {client_address}: {e}")
         finally:
             client_socket.close()
-            func._elogs(f"Соединение с клиентом {client_address} закрыто", ecode=200)
+            self.Logger.info(f"Connection with the client {client_address} closed")
 
     def start_mcis_srv(self):
-        func._elogs(f"MCIS TCP Сервер запущен на ip {config.server_host_tcp[0]}:{config.server_host_tcp[1]}", ecode=200)
+        self.Logger.info(f"MCIS TSP has started ip {config.server_host_tcp[0]}:{config.server_host_tcp[1]}")
+
         while True:
             try:
                 client_socket, client_address = self.server_socket.accept()
                 thread = threading.Thread(target=self.handle_client, args=(client_socket, client_address), daemon=True)
                 thread.start()
             except Exception as e:
-                func._elogs(f"Ошибка в основном цикле сервера: {e}", ecode=500)
+                self.Logger.error(f"Error in the main server cycle:{e}")
                 
 
 
