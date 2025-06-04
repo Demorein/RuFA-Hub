@@ -26,16 +26,16 @@ from mcis.mcis_srv import mcis_srv
 from mcis.mcis_srv_tcp import mcis_srv_tcp
 
 Logger = core.Logger(__name__, "logs/main.log")
-Logger.error("123")
-Logger.critical("123")
-Logger.debug("123")
+
 # Queue
 data_queue = queue.Queue()
 MSTB_queue = queue.Queue()
 Logger.info("Initialization queue")
 
 # TCP/UDP Servers queue
+Logger.debug("MCIS_SRV_UDP Init")
 server = mcis_srv(data_queue)
+Logger.debug("MCIS_SRV_TCP Init")
 server_tcp = mcis_srv_tcp(data_queue)
 server_thread = threading.Thread(target=server.start_mcis_srv, daemon=True)
 server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_srv, daemon=True)
