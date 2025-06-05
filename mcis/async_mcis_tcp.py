@@ -76,7 +76,6 @@ class mcis_srv_tcp:
             asyncio.run(self.main())
         except Exception as e:
             self.Logger.error(f"Error in mcis_tcp: {e}")
-<<<<<<< HEAD
 
 
 
@@ -95,5 +94,3 @@ class mcis_srv_tcp:
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-=======
->>>>>>> 482f874172339af4ef74f0e75345faff592d0f41

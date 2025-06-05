@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config
 from core import Logger
 
+#MCIS UDP
 class mcis_srv:
     def __init__(self):
         self.users = users.users()

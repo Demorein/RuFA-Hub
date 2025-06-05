@@ -1,6 +1,8 @@
 import sqlite3
 from os import path
 
+#SQL
+
 class sql_func:
     def __init__(self, db_name):
         self.db_name = db_name
