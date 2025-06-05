@@ -69,7 +69,7 @@ class mcis_srv_tcp:
             self.Logger.info(f"Connection with the client {client_address} closed")
 
     def start_mcis_srv(self):
-        self.Logger.info(f"MCIS TSP has started ip {config.server_host_tcp[0]}:{config.server_host_tcp[1]}")
+        self.Logger.info(f"MCIS TCP has started ip {config.server_host_tcp[0]}:{config.server_host_tcp[1]}")
 
         while True:
             try:
