@@ -20,7 +20,7 @@ class sql_func:
         conn.commit()
         conn.close()
 
-    async def insert_host(self, ip, port, api):  
+    def insert_host(self, ip, port, api):  
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -36,7 +36,7 @@ class sql_func:
             conn.close()
             return False
 
-    async def delete_host(self, ip, port):
+    def delete_host(self, ip, port):
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -49,7 +49,7 @@ class sql_func:
         
         conn.close()
 
-    async def delete_all_hosts(self):
+    def delete_all_hosts(self):
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
@@ -57,7 +57,7 @@ class sql_func:
         conn.commit()
         conn.close()
 
-    async def show_all_hosts(self):
+    def show_all_hosts(self):
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
         
@@ -75,7 +75,7 @@ class sql_func:
         
         return "\n".join(result)
 
-    async def get_api_by_ip(self, ip):
+    def get_api_by_ip(self, ip):
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
 
