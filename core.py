@@ -8,12 +8,10 @@ class Logger:
             self.logger.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(name)s | %(message)s')
 
-            # Консоль
             ch = logging.StreamHandler()
             ch.setFormatter(formatter)
             self.logger.addHandler(ch)
 
-            # Файл (если указан)
             if logfile:
                 os.makedirs(os.path.dirname(logfile), exist_ok=True)
                 fh = logging.FileHandler(logfile, encoding="utf-8")
