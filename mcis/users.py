@@ -32,6 +32,7 @@ class users:
                 return "Unauthorized", False
         except Exception as e:
             self.Logger.error(f"Authorization error:{e}")
+<<<<<<< HEAD
             return "Authorization error", False
         
 
@@ -50,3 +51,6 @@ class users:
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+=======
+            return "Authorization error", False
+>>>>>>> 482f874172339af4ef74f0e75345faff592d0f41
