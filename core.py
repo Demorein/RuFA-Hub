@@ -30,8 +30,8 @@ class Logger:
 class Core_Module_Finder:
 
     def __init__(self):
-        self.module_dir = "modules"
-        self.files = [f for f in os.listdir("modules/") if os.path.isfile(os.path.join("modules/", f))]
+        self.module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "modules"))
+        self.files = [f for f in os.listdir(self.module_dir) if os.path.isfile(os.path.join(self.module_dir, f))]
 
     def module_list(self, function:str = "list"):
         if function == "list":
@@ -40,16 +40,17 @@ class Core_Module_Finder:
             return "\n".join(self.files)
     
     def module_info(self, module_name:str):
-            file_path = os.path.join(self.module_dir, f"{module_name}.py")
-            if not os.path.isfile(file_path):
-                raise FileNotFoundError(f"Модуль {module_name} не найден")
+        file_path = os.path.join(self.module_dir, f"{module_name}.py")
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"Модуль {module_name} не найден")
 
-            try:
-                with open(file_path, "r") as f:
-                    parts = f.read().split("#$%^&*")[1]
-                    return parts
-            except Exception as e:
-                return "Info Error"
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                parts = f.read().split("#$%^&*")[1]
+                return parts
+        except Exception as e:
+            return "Info Error"
+
   
 
 

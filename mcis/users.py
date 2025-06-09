@@ -1,12 +1,12 @@
 import sys
 import os
 import secrets
-import sql_function
 import asyncio
+from mcis import sql_function
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config
 from core import Logger
-import sql_function
+
 
 class users:
     def __init__(self):

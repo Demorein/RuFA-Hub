@@ -5,6 +5,11 @@ import queue
 import time
 import importlib
 import core
+import json
+
+MODULES_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "modules"))
+if MODULES_PATH not in sys.path:
+    sys.path.append(MODULES_PATH)
 
 # ----------------------Modules------------------------|
 import modules.hardware_monitor                       #|
@@ -23,55 +28,83 @@ from web_interface.app import app
 from web_interface.data_handler import update_data
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'mcis')))
-from mcis.mcis_srv import mcis_srv
-from mcis.mcis_srv_tcp import mcis_srv_tcp
+
+from mcis.async_mcis_udp import mcis_srv
+from mcis.async_mcis_tcp import mcis_srv_tcp
+
+# from mcis.mcis_srv import mcis_srv
+# from mcis.mcis_srv_tcp import mcis_srv_tcp
 
 #Logger
 Logger = core.Logger(__name__, "logs/main.log")
 
 # Queue
 data_queue = queue.Queue()
-MSTB_queue = queue.Queue()
 Logger.info("Initialization queue")
 
 # TCP/UDP Servers queue
 server = mcis_srv(data_queue)
 server_tcp = mcis_srv_tcp(data_queue)
-server_thread = threading.Thread(target=server.start_mcis_srv, daemon=True)
-server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_srv, daemon=True)
+server_thread = threading.Thread(target=server.start_mcis_server, daemon=True)
+server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_server, daemon=True)
 
 
 #Data Parser
+import traceback
+
+import traceback
+
 def process_data():
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
     while True:
         try:
-            data = data_queue.get(timeout=1)
-            Logger.info(f"Data from MCIS: {data}")
-            
-            try:
-                module_name = data["module"]
+            raw_data = data_queue.get(timeout=1)
+            Logger.info(f"Raw data from MCIS: {raw_data}")
 
-                # Check if the module exists in the list
+            try:
+                packets = json.loads(raw_data) if isinstance(raw_data, str) else raw_data
+                if isinstance(packets, dict):
+                    packets = [packets]
+            except json.JSONDecodeError as e:
+                Logger.error(f"Failed to decode JSON from MCIS data: {e}")
+                continue
+
+            for i, packet in enumerate(packets):
+                module_name = packet.get("module")
+                if not module_name:
+                    Logger.warning(f"Packet {i} is missing 'module' key: {packet}")
+                    continue
+
                 if f"{module_name}.py" not in core.Core_Module_Finder().module_list():
                     Logger.warning(f"Module '{module_name}' not found in list.")
                     continue
 
-                # Dynamically import the module
-                mod = importlib.import_module(f"module.{module_name}")
+                try:
+                    mod = importlib.import_module(module_name)
+                except Exception as e:
+                    err_msg = f"Failed to import module '{module_name}' for packet {i}: {e}"
+                    Logger.error(err_msg)
+                    Logger.error(traceback.format_exc())
+                    continue  # Переходим к следующему пакету
 
-                # Check if the module has a mainloop() function
                 if hasattr(mod, "mainloop"):
-                    mod.mainloop(data)
+                    try:
+                        mod.mainloop(packet)
+                    except Exception as e:
+                        err_msg = f"Exception inside module '{module_name}' mainloop for packet {i}: {e}"
+                        Logger.error(err_msg)
+                        Logger.error(traceback.format_exc())
                 else:
                     Logger.warning(f"Module '{module_name}' does not contain a mainloop() function.")
 
-            except Exception as e:
-                Logger.error(f"Error in module '{module_name}': {e}")
-
-            update_data(data)
+                update_data(packet)
 
         except queue.Empty:
             continue
+
+
+
+
 
 
 data_thread = threading.Thread(target=process_data, daemon=True)

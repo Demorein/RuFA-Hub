@@ -1,6 +1,6 @@
-VENV_PATH="ROUTE TO VENV"
+VENV_PATH="./rufa-venv"
 
-MAIN_PY_PATH="ROUTE TO MAIN.PY"
+MAIN_PY_PATH="./main.py"
 
 SCREEN_NAME="RuFA-Hub"
 

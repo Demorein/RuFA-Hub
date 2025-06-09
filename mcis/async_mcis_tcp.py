@@ -1,16 +1,17 @@
 import asyncio
 import sys
 import os
-import users
+from mcis import users
 import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config
 from core import Logger
 
 class mcis_srv_tcp:
-    def __init__(self):
+    def __init__(self, data_queue):
+        self.data_queue = data_queue
         self.users = users.users()
-        self.Logger = Logger(__name__, "log/mcis_tcp.log")
+        self.Logger = Logger(__name__, "logs/mcis_tcp.log")
         self.packets = {}  # { ip: [packet1, packet2, ...] }
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
@@ -48,14 +49,19 @@ class mcis_srv_tcp:
     async def process_packets(self):
         while True:
             await asyncio.sleep(2)
+            all_combined = {}
             for ip, packet_list in self.packets.items():
                 combined = {}
                 for i, pkt in enumerate(packet_list, 1):
                     combined[f"data{i}"] = pkt
-                combined_json = json.dumps(combined, ensure_ascii=False)
-                self.Logger.info(f"Combined packet from {ip}: {combined_json}")
-                print(f"Combined packet from {ip}: {combined_json}")
+                all_combined[ip] = combined
+            if all_combined:
+                combined_json = json.dumps(all_combined, ensure_ascii=False)
+                self.Logger.info(f"Combined packets: {combined_json}")
+                print(f"Combined packets: {combined_json}")
+                self.data_queue.put(combined_json)
             self.packets.clear()
+
 
     async def main(self):
         self.Logger.info("Starting MCIS TCP server")

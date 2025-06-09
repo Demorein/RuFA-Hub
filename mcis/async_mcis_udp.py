@@ -2,7 +2,7 @@ import asyncio
 import sys
 import os
 import socket
-import users
+from mcis import users
 import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config
@@ -10,9 +10,10 @@ from core import Logger
 
 #MCIS UDP
 class mcis_srv:
-    def __init__(self):
+    def __init__(self, data_queue):
         self.users = users.users()
-        self.Logger = Logger(__name__, "log/mcis_udp.log")
+        self.data_queue = data_queue
+        self.Logger = Logger(__name__, "logs/mcis_udp.log")
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind((config.server_host_udp[0], config.server_host_udp[1]))
         self.packets = {}
@@ -34,11 +35,25 @@ class mcis_srv:
     async def process_packets(self):
         while True:
             await asyncio.sleep(2)
+            combined_all = []
+
             for ip, packet_list in self.packets.items():
-                combined_json = json.dumps(packet_list, ensure_ascii=False)
-                self.Logger.info(f"Combined packet from {ip}: {combined_json}")
-                print(f"Combined packet from {ip}: {combined_json}")
+                for pkt in packet_list:
+                    pkt_with_ip = {
+                        "data": pkt.get("data"),
+                        "module": pkt.get("module"),
+                        "api": pkt.get("api"),
+                        "ip": ip
+                    }
+                    combined_all.append(pkt_with_ip)
+
+            if combined_all:
+                combined_json = json.dumps(combined_all, ensure_ascii=False)
+                self.Logger.info(f"Combined all packets: {combined_json}")
+                self.data_queue.put(combined_json)
+
             self.packets.clear()
+
 
     async def main(self):
         self.Logger.info("Starting MCIS UDP server")
