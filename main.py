@@ -3,6 +3,7 @@ import os
 import threading
 import queue
 import time
+import importlib
 import core
 
 # ----------------------Modules------------------------|
@@ -25,6 +26,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'mcis'))
 from mcis.mcis_srv import mcis_srv
 from mcis.mcis_srv_tcp import mcis_srv_tcp
 
+#Logger
 Logger = core.Logger(__name__, "logs/main.log")
 
 # Queue
@@ -33,12 +35,11 @@ MSTB_queue = queue.Queue()
 Logger.info("Initialization queue")
 
 # TCP/UDP Servers queue
-Logger.debug("MCIS_SRV_UDP Init")
 server = mcis_srv(data_queue)
-Logger.debug("MCIS_SRV_TCP Init")
 server_tcp = mcis_srv_tcp(data_queue)
 server_thread = threading.Thread(target=server.start_mcis_srv, daemon=True)
 server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_srv, daemon=True)
+
 
 #Data Parser
 def process_data():
@@ -46,9 +47,32 @@ def process_data():
         try:
             data = data_queue.get(timeout=1)
             Logger.info(f"Data from MCIS: {data}")
+            
+            try:
+                module_name = data["module"]
+
+                # Check if the module exists in the list
+                if f"{module_name}.py" not in core.Core_Module_Finder().module_list():
+                    Logger.warning(f"Module '{module_name}' not found in list.")
+                    continue
+
+                # Dynamically import the module
+                mod = importlib.import_module(f"module.{module_name}")
+
+                # Check if the module has a mainloop() function
+                if hasattr(mod, "mainloop"):
+                    mod.mainloop(data)
+                else:
+                    Logger.warning(f"Module '{module_name}' does not contain a mainloop() function.")
+
+            except Exception as e:
+                Logger.error(f"Error in module '{module_name}': {e}")
+
             update_data(data)
+
         except queue.Empty:
             continue
+
 
 data_thread = threading.Thread(target=process_data, daemon=True)
 Logger.info("Initialization of basic flows")
