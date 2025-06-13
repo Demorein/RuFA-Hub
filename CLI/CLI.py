@@ -1,17 +1,27 @@
 import CLI_commans
-import CLI_config
-
+from system_commands import SystemCommands
+import CLI_list
 
 class CLI:
     def __init__(self, queue):
         pass
 
+
+#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######FIXME#######
+
     def main(self):
         while True:
-            self.user_command = input()
+            user_command = input()
+            if user_command.split()[0] in CLI_list.commands:
+                pass
 
-    def logger(self):
-        pass
+
+    def logger(self, name = "None"):
+        if name == "None":
+            SystemCommands._logger(__name__, "CLI.log")
+        else:
+            SystemCommands._logger()
+        
 
 
 # RuFA-Hub

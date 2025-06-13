@@ -1,7 +1,6 @@
 import sys
 import os
 import secrets
-import asyncio
 from mcis import sql_function
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import config

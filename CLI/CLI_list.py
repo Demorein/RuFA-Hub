@@ -1,0 +1,1 @@
+commands = ["logger", "mcis_udp", "hardware", "network"]

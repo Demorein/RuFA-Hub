@@ -1,0 +1,44 @@
+2025-06-12 20:07:58,271 | INFO | __main__ | Initialization queue
+2025-06-12 20:07:58,327 | INFO | __main__ | Initialization of basic flows
+2025-06-12 20:07:58,328 | INFO | __main__ | Launch of basic flows
+2025-06-12 20:07:58,328 | INFO | __main__ | Initialization of basic modules
+2025-06-12 20:07:58,395 | INFO | __main__ | Launch of basic modules
+2025-06-12 20:07:58,397 | INFO | __main__ | Launch of the main flows
+2025-06-12 20:08:03,561 | INFO | __main__ | The server is stopped by the user
+2025-06-12 20:11:47,114 | INFO | __main__ | Initialization queue
+2025-06-12 20:11:47,118 | INFO | __main__ | Initialization of basic flows
+2025-06-12 20:11:47,120 | INFO | __main__ | Launch of basic flows
+2025-06-12 20:11:47,120 | INFO | __main__ | Initialization of basic modules
+2025-06-12 20:11:47,135 | INFO | __main__ | Launch of basic modules
+2025-06-12 20:11:47,138 | INFO | __main__ | Launch of the main flows
+2025-06-12 20:12:37,412 | INFO | __main__ | Raw data from MCIS: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
+2025-06-12 20:14:19,882 | INFO | __main__ | Raw data from MCIS: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
+2025-06-12 20:14:39,380 | INFO | __main__ | The server is stopped by the user
+2025-06-12 20:14:54,707 | INFO | __main__ | Initialization queue
+2025-06-12 20:14:54,714 | INFO | __main__ | Initialization of basic flows
+2025-06-12 20:14:54,714 | INFO | __main__ | Launch of basic flows
+2025-06-12 20:14:54,715 | INFO | __main__ | Initialization of basic modules
+2025-06-12 20:14:54,729 | INFO | __main__ | Launch of basic modules
+2025-06-12 20:14:54,732 | INFO | __main__ | Launch of the main flows
+2025-06-12 20:15:10,809 | INFO | __main__ | Raw data from MCIS: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
+2025-06-12 20:15:10,820 | ERROR | __main__ | Exception inside module 'test_module' mainloop for packet 0: [WinError 3] Системе не удается найти указанный путь: ''
+2025-06-12 20:15:10,824 | ERROR | __main__ | Traceback (most recent call last):
+  File "c:\Users\evgen\Documents\GitHub\RuFA-Hub\main.py", line 92, in process_data
+    mod.mainloop(packet)
+  File "c:\Users\evgen\Documents\GitHub\RuFA-Hub\modules\test_module.py", line 4, in mainloop
+    a = Logger(__name__, "test.log")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\evgen\Documents\GitHub\RuFA-Hub\core.py", line 18, in __init__
+    os.makedirs(os.path.dirname(logfile), exist_ok=True)
+  File "<frozen os>", line 225, in makedirs
+FileNotFoundError: [WinError 3] Системе не удается найти указанный путь: ''
+
+2025-06-12 20:15:35,250 | INFO | __main__ | The server is stopped by the user
+2025-06-12 20:15:45,396 | INFO | __main__ | Initialization queue
+2025-06-12 20:15:45,401 | INFO | __main__ | Initialization of basic flows
+2025-06-12 20:15:45,401 | INFO | __main__ | Launch of basic flows
+2025-06-12 20:15:45,403 | INFO | __main__ | Initialization of basic modules
+2025-06-12 20:15:45,419 | INFO | __main__ | Launch of basic modules
+2025-06-12 20:15:45,422 | INFO | __main__ | Launch of the main flows
+2025-06-12 20:16:07,542 | INFO | __main__ | Raw data from MCIS: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
+2025-06-13 01:03:48,082 | INFO | __main__ | The server is stopped by the user

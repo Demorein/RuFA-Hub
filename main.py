@@ -52,8 +52,6 @@ server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_server, daemon
 #Data Parser
 import traceback
 
-import traceback
-
 def process_data():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
     while True:
@@ -101,11 +99,6 @@ def process_data():
 
         except queue.Empty:
             continue
-
-
-
-
-
 
 data_thread = threading.Thread(target=process_data, daemon=True)
 Logger.info("Initialization of basic flows")

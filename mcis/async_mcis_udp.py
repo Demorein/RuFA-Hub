@@ -32,6 +32,9 @@ class mcis_srv:
             else:
                 self.Logger.info(f"Unauthorized access from {addr}")
 
+    async def send_data(self, data, host:tuple):
+        await self.server_socket.sendto(data.encode(), host)
+
     async def process_packets(self):
         while True:
             await asyncio.sleep(2)
