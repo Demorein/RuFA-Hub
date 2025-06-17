@@ -5,6 +5,7 @@ import yaml
 import json
 import queue
 import threading
+import inspect
 
 class Logger:
     def __init__(self, name: str, logfile: str = None):
@@ -32,144 +33,140 @@ class Logger:
     def critical(self, msg): self.logger.critical(msg)
     def exception(self, msg): self.logger.exception(msg)
 
-class Core_Module_Finder:
-
+class setup_module():
     def __init__(self):
-        self.module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "modules"))
-        self.files = [f for f in os.listdir(self.module_dir) if os.path.isdir(os.path.join(self.module_dir, f))]
+        self.module_names = self.collect_module_configs()
+        self.Logger = Logger(__name__, "logs/core.log")
 
-    def module_list(self, function:str = "list"):
-        if function == "list":
-            return self.files
-        else:
-            return "\n".join(self.files)
-    
-    def module_info(self, module_name:str):
-        file_path = os.path.join(self.module_dir, f"{module_name}.py")
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError(f"Модуль {module_name} не найден")
+    def collect_module_configs(self, path="./modules"):
+        result = []
+        for name in os.listdir(path):
+            cfg = f"{path}/{name}/config.yml"
+            if os.path.isdir(f"{path}/{name}") and os.path.isfile(cfg):
+                with open(cfg) as f:
+                    data = yaml.safe_load(f)
+                    result.append({
+                        "module_name": name,
+                        "launch_mode": data.get("launch_mode"),
+                        "id": data.get("ID")
+                    })
+        return result
 
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                parts = f.read().split("#$%^&*")[1]
-                return parts
-        except Exception as e:
-            return "Info Error"
-        
-def system_info():
-    import platform
-    return [f"{platform.system()} {platform.release()}", platform.node(), platform.version(), platform.machine(), platform.processor(), f"Python {platform.python_version()}"]
+    def setup(self):
+        modules = self.collect_module_configs()
+        loop_queues = []
 
-#FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME#
-################ Добавить то, чтобы если очередь есть, то покет в очерель сувался#########################FIXME#
-#FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME##########FIXME#
+        for mod in modules:
+            if mod["launch_mode"] == "loop":
+                mod_name = mod["module_name"]
+                mod_id = mod["id"]
+                mod_path = f"./modules/{mod_name}/main.py"
+
+                try:
+                    spec = importlib.util.spec_from_file_location(mod_name, mod_path)
+                    mod_module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod_module)
+                except Exception as e:
+                    Logger.error(f"Ошибка загрузки модуля '{mod_name}': {e}")
+                    continue
+
+                # Проверяем функцию mainloop
+                mainloop = getattr(mod_module, "mainloop", None)
+                if not callable(mainloop):
+                    Logger.error(f"В модуле '{mod_name}' отсутствует функция mainloop()")
+                    continue
+
+                # Проверяем количество аргументов у mainloop (должен быть 1)
+                sig = inspect.signature(mainloop)
+                params = sig.parameters
+                if len(params) != 1:
+                    Logger.error(f"Функция mainloop в модуле '{mod_name}' должна принимать ровно один аргумент (queue)")
+                    continue
+
+                # Запускаем поток с очередью
+                q = queue.Queue()
+                t = threading.Thread(target=mainloop, args=(q,), daemon=True)
+                t.start()
+
+                loop_queues.append({
+                    "queue": q,
+                    "id": mod_id
+                })
+
+        return loop_queues
+
 
 class process_data:
-    def __init__(self, queue):
-        self.data_queue = queue
+    def __init__(self, modules_queue, modules_json_param, my_queue):
+        self.modules_queue = modules_queue              # Очереди для loop-модулей
+        self.modules_json_param = modules_json_param    # Данные о модулях
+        self.my_queue = my_queue                        # Очередь входящих пакетов
         self.Logger = Logger(__name__, "core.log")
-        self.queues = {}
 
-    # Получает сырые данные
-    def process_data(self):
+    def procces_data(self):
         while True:
-            try:
+            data_batch = self.my_queue.get()  # Ожидаем пакет
+            data_batch = json.loads(data_batch)
+            self.Logger.info(data_batch)
+            for packet in data_batch:
+                module_name = packet.get("module")
+                module_info = self.get_id_modules(module_name)
+                if not module_info:
+                    continue
 
-                raw_data = self.data_queue.get(timeout=1)
-                self.Logger.info(f"Raw data from MCIS: {raw_data}")
-                self.cut_data(raw_data)
+                mode = module_info["launch_mode"]
+                if mode == "loop":
+                    self.send_data_to_module_queue(packet, module_info["id"])
+                elif mode == "once":
+                    self.send_data_to_module_once(packet, module_info["module_name"])
 
-            except Exception as e:
-                pass
+    def send_data_to_module_queue(self, packet, target_id):
+        for entry in self.modules_queue:
+            if entry["id"] == target_id:
+                entry["queue"].put(packet)
+                break
 
-    # Запуск модуля (Тут происходит весь движ)
-    def start_module(self, data:json):
-        
-        module_type = self.get_start_module_type(data)
+    def send_data_to_module_once(self, packet, module_name):
+        def runner():
+            spec = importlib.util.spec_from_file_location(module_name, f"./modules/{module_name}/main.py")
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            mod.mainloop(packet)  # Без проверок, предполагаем что всё есть и правильно
 
-        if module_type == "once":
-            self.run_modules_once(data)
-        elif module_type == "loop":
-            id = self.get_module_ID(data)
-            queue = self.create_queue(id)
-            self.run_module_loop(data, queue)
+        threading.Thread(target=runner, daemon=True).start()
 
-    # Получение типа модуля (как его запускать)
-    def get_start_module_type(self, data: json):
-        module = data["module"]
-        with open(f"modules/{module}/config.yml", 'r', encoding='utf-8') as file:
-            return yaml.safe_load(file).get("launch_mode")
-
-    # Резка пакета
-    def cut_data(self, raw_data:list) -> json:
-            for i in range(len(raw_data)):
-                self.start_module(raw_data[i])
-
-    # Создание новой очереди для модуля
-    def create_queue(self, id: int) -> queue.Queue:
-        if id in self.queues:
-            return self.queues[id]
-        self.queues[id] = queue.Queue()
-        return self.queues[id]
+    def get_id_modules(self, name):
+        for module in self.modules_json_param:
+            if module["module_name"] == name:
+                return module
+        return None
 
 
-    # Получить ID модуля
-    def get_module_ID(self, data:json) -> int:
-        module = data["module"]
-        with open(f"module/{module}/config.yml", 'r', encoding='utf-8') as file:
-            return yaml.safe_load(file).get("ID")
- 
+if __name__ == "__main__":
+    from time import sleep
+    import threading
 
-    def run_module_loop(self, data, queue):
-        module_name = data.get("module")
-        path = f"modules/{module_name}"
+    a = setup_module()
+    b = a.collect_module_configs()
+    print(b)
+    queues = a.setup()
+    print(queues)
 
-        if not os.path.isdir(path):
-            return
+    my_q = queue.Queue()
 
-        with open(f"{path}/config.yml", "r") as f:
-            cfg = yaml.safe_load(f)
+    pp = process_data(modules_queue = queues, modules_json_param = b, my_queue=my_q)
 
-        if cfg.get("launch_mode") != "loop":
-            return
+    th = threading.Thread(target=pp.procces_data, daemon=True)
+    th.start()
 
-        main_file = cfg.get("main_file")
-        main_func_name = cfg.get("main_function")
+    sleep(2)
 
-        spec = importlib.util.spec_from_file_location(f"{module_name}_main", f"{path}/{main_file}")
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-
-        if hasattr(mod, main_func_name):
-            func = getattr(mod, main_func_name)
-            thread = threading.Thread(target=func, args=([data, queue],))
-            thread.daemon = True  # чтобы поток не мешал закрытию программы
-            thread.start()
+    my_q.put([{"data": "AHAHAHAHAHA", "module": "example_module2", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}])
 
 
-    # Запуск модуля один раз
-    def run_module_once(self, data):
-        module_name = data.get("module")
-        path = f"modules/{module_name}"
-
-        if not os.path.isdir(path):
-            return
-
-        with open(f"{path}/config.yml", "r") as f:
-            cfg = yaml.safe_load(f)
-
-        if cfg.get("launch_mode") != "once":
-            return
-
-        main_file = cfg.get("main_file")
-        main_func_name = cfg.get("main_function")
-
-        spec = importlib.util.spec_from_file_location(f"{module_name}_main", f"{path}/{main_file}")
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-
-        if hasattr(mod, main_func_name):
-            getattr(mod, main_func_name)(data)
+    while True:
+        sleep(1)
+        continue
 
 
 # RuFA-Hub

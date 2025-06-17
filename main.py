@@ -3,9 +3,7 @@ import os
 import threading
 import queue
 import time
-import importlib
 import core
-import json
 
 MODULES_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "modules"))
 if MODULES_PATH not in sys.path:
@@ -48,63 +46,29 @@ server_tcp = mcis_srv_tcp(data_queue)
 server_thread = threading.Thread(target=server.start_mcis_server, daemon=True)
 server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_server, daemon=True)
 
+#Create process_data queue
+data_to_module_queue = queue.Queue()
 
 #Data Parser
-import traceback
-
-def process_data():
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
+def data_parser(data_q:queue.Queue) -> None:
     while True:
         try:
             raw_data = data_queue.get(timeout=1)
             Logger.info(f"Raw data from MCIS: {raw_data}")
-
-            try:
-                packets = json.loads(raw_data) if isinstance(raw_data, str) else raw_data
-                if isinstance(packets, dict):
-                    packets = [packets]
-            except json.JSONDecodeError as e:
-                Logger.error(f"Failed to decode JSON from MCIS data: {e}")
-                continue
-
-            for i, packet in enumerate(packets):
-                module_name = packet.get("module")
-                if not module_name:
-                    Logger.warning(f"Packet {i} is missing 'module' key: {packet}")
-                    continue
-
-                if f"{module_name}.py" not in core.Core_Module_Finder().module_list():
-                    Logger.warning(f"Module '{module_name}' not found in list.")
-                    continue
-
-                try:
-                    mod = importlib.import_module(module_name)
-                except Exception as e:
-                    err_msg = f"Failed to import module '{module_name}' for packet {i}: {e}"
-                    Logger.error(err_msg)
-                    Logger.error(traceback.format_exc())
-                    continue  # Переходим к следующему пакету
-
-                if hasattr(mod, "mainloop"):
-                    try:
-                        mod.mainloop(packet)
-                    except Exception as e:
-                        err_msg = f"Exception inside module '{module_name}' mainloop for packet {i}: {e}"
-                        Logger.error(err_msg)
-                        Logger.error(traceback.format_exc())
-                else:
-                    Logger.warning(f"Module '{module_name}' does not contain a mainloop() function.")
-
-                update_data(packet)
-
+            data_q.put(raw_data)
         except queue.Empty:
             continue
+        except Exception as e:
+            Logger.error(e)
 
-data_thread = threading.Thread(target=process_data, daemon=True)
+
+
 Logger.info("Initialization of basic flows")
 
 def run_flask():
     app.run(host=f"{flask_host[0]}", port=flask_host[1], debug=flask_debug, use_reloader=False)
+
+
 
 if __name__ == "__main__":
 
@@ -112,6 +76,7 @@ if __name__ == "__main__":
 
     try:
         Logger.info("Initialization of basic modules")
+        data_parser_thread = threading.Thread(target=data_parser, args=(data_to_module_queue,), daemon=True)
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
         uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
@@ -128,11 +93,31 @@ if __name__ == "__main__":
         flask_thread.start()
         server_thread.start()
         server_thread_tcp.start()
-
-        data_thread.start()
+        data_parser_thread.start()
+        
 
         Logger.info("Launch of the main flows")
 
+        #Init modules
+        try:
+            setup_modules = core.setup_module()
+            q_modules = setup_modules.setup()
+            moduels_json_param = setup_modules.collect_module_configs()
+
+            process_data_init = core.process_data(modules_queue=q_modules, modules_json_param=moduels_json_param, my_queue=data_to_module_queue)
+            process_data_thread = threading.Thread(target=process_data_init.procces_data)
+
+            Logger.info("Launch loop modules")
+        except Exception as e:
+            Logger.error("Error in Init modules: {e}")
+
+        try:
+            process_data_thread.start()
+            Logger.info("Launch process_data thread")
+        except Exception as e:
+            Logger.error("Error in process_data thread")
+        
+        
 
         while True:
             time.sleep(1)
@@ -142,6 +127,7 @@ if __name__ == "__main__":
         print("\n\n\nThe server is stopped by the user")
         print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
         Logger.info("The server is stopped by the user")
+        
     except Exception as e:
         print(f"\n\n--- Error! ---\n\n{e}")
         print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")

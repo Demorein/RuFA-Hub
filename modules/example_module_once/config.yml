@@ -11,4 +11,4 @@ launch_mode: once
 main_function: mainloop
 
 #Уникальный ID модуля | У двух модулей не может быть один и тот же ID
-ID: 123456
+ID: 123456789

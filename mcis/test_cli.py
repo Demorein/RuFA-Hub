@@ -4,8 +4,8 @@ import socket
 import json
 
 a = {
-     "module":"discord_parse",
-     "api":"f7643450b89d5ef7867b1a92144cab58",
+     "module":"example_module_once",
+     "api":"4e6febd4826fb51cacfd2cb5702ec73b",
      "data":"Test Logs"
      }
 

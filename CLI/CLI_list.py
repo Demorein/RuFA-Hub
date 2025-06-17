@@ -1,1 +1,1 @@
-commands = ["logger", "mcis_udp", "hardware", "network"]
+#Тут типо конфиг CLI интерфейса лол

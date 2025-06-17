@@ -1,8 +1,0 @@
-2025-06-12 20:07:58,398 | INFO | mcis.async_mcis_udp | Starting MCIS UDP server
-2025-06-12 20:11:47,139 | INFO | mcis.async_mcis_udp | Starting MCIS UDP server
-2025-06-12 20:12:37,393 | INFO | mcis.async_mcis_udp | Combined all packets: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
-2025-06-12 20:14:19,882 | INFO | mcis.async_mcis_udp | Combined all packets: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
-2025-06-12 20:14:54,734 | INFO | mcis.async_mcis_udp | Starting MCIS UDP server
-2025-06-12 20:15:10,808 | INFO | mcis.async_mcis_udp | Combined all packets: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
-2025-06-12 20:15:45,423 | INFO | mcis.async_mcis_udp | Starting MCIS UDP server
-2025-06-12 20:16:07,541 | INFO | mcis.async_mcis_udp | Combined all packets: [{"data": "AHAHAHAHAHA", "module": "test_module", "api": "f7643450b89d5ef7867b1a92144cab58", "ip": "192.168.203.100"}]
