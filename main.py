@@ -3,7 +3,11 @@ import os
 import threading
 import queue
 import time
-import mcis.func
+import core
+
+MODULES_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "modules"))
+if MODULES_PATH not in sys.path:
+    sys.path.append(MODULES_PATH)
 
 # ----------------------Modules------------------------|
 import modules.hardware_monitor                       #|
@@ -16,45 +20,68 @@ from modules.network_monitor import get_network_load  #|
 from config.config import flask_host, server_host_udp, flask_debug  #|
 #--------------------------------------------------------------------|
 
-import mcis.func
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'web_interface')))
 
 from web_interface.app import app
 from web_interface.data_handler import update_data
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'mcis')))
-from mcis.mcis_srv import mcis_srv
-from mcis.mcis_srv_tcp import mcis_srv_tcp
+
+from mcis.async_mcis_udp import mcis_srv
+from mcis.async_mcis_tcp import mcis_srv_tcp
+
+# from mcis.mcis_srv import mcis_srv
+# from mcis.mcis_srv_tcp import mcis_srv_tcp
+
+#Logger
+Logger = core.Logger(__name__, "logs/main.log")
+
+#Stop Queue
+stop_queue = queue.Queue()
+stop_queue.put(False)
+
 
 # Queue
 data_queue = queue.Queue()
-MSTB_queue = queue.Queue()
+Logger.info("Initialization queue")
 
 # TCP/UDP Servers queue
 server = mcis_srv(data_queue)
 server_tcp = mcis_srv_tcp(data_queue)
-server_thread = threading.Thread(target=server.start_mcis_srv, daemon=True)
-server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_srv, daemon=True)
+server_thread = threading.Thread(target=server.start_mcis_server, daemon=True)
+server_thread_tcp = threading.Thread(target=server_tcp.start_mcis_server, daemon=True)
+
+#Create process_data queue
+data_to_module_queue = queue.Queue()
 
 #Data Parser
-def process_data():
+def data_parser(data_q:queue.Queue) -> None:
     while True:
         try:
-            data = data_queue.get(timeout=1)
-            print("Получены данные из MCIS:", data)
-            update_data(data)
+            raw_data = data_queue.get(timeout=1)
+            Logger.info(f"Raw data from MCIS: {raw_data}")
+            data_q.put(raw_data)
         except queue.Empty:
             continue
+        except Exception as e:
+            Logger.error(e)
 
-data_thread = threading.Thread(target=process_data, daemon=True)
+
+
+Logger.info("Initialization of basic flows")
 
 def run_flask():
     app.run(host=f"{flask_host[0]}", port=flask_host[1], debug=flask_debug, use_reloader=False)
 
-if __name__ == "__main__":
-    try:
 
+
+if __name__ == "__main__":
+
+    Logger.info("Launch of basic flows")
+
+    try:
+        Logger.info("Initialization of basic modules")
+        data_parser_thread = threading.Thread(target=data_parser, args=(data_to_module_queue,), daemon=True)
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         hardware_pars = threading.Thread(target=modules.hardware_monitor.get_system_info, daemon=True)
         uptime_pars = threading.Thread(target=modules.uptime.uptime_parcer, daemon=True)
@@ -65,29 +92,54 @@ if __name__ == "__main__":
         network_data.start()
         hardware_pars.start()
         uptime_pars.start()
-
+        Logger.info("Launch of basic modules")
 
         #Main service
         flask_thread.start()
         server_thread.start()
         server_thread_tcp.start()
-
-        data_thread.start()
-
+        data_parser_thread.start()
         
 
+        Logger.info("Launch of the main flows")
+
+        #Init modules
+        try:
+            setup_modules = core.setup_module(stop_queue=stop_queue)
+            q_modules = setup_modules.setup()
+            moduels_json_param = setup_modules.collect_module_configs()
+
+            process_data_init = core.process_data(modules_queue=q_modules, modules_json_param=moduels_json_param, my_queue=data_to_module_queue, stop_queue=stop_queue)
+            process_data_thread = threading.Thread(target=process_data_init.procces_data)
+
+            Logger.info("Launch loop modules")
+        except Exception as e:
+            Logger.error(f"Error in Init modules: {e}")
+
+        try:
+            process_data_thread.start()
+            Logger.info("Launch process_data thread")
+        except Exception as e:
+            Logger.error("Error in process_data thread")
+        
+        
 
         while True:
             time.sleep(1)
+            stop_queue.put(False)
     except KeyboardInterrupt:
+        stop_queue.put(True)
         os.system("export FLASK_ENV=development")
-        mcis.func._elogs(f"The server unexpectedly completed the work", ecode = 500, v="error")
+
         print("\n\n\nThe server is stopped by the user")
         print(f"\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
-
+        Logger.info("The server is stopped by the user")
+        
     except Exception as e:
+        stop_queue.put(True)
         print(f"\n\n--- Error! ---\n\n{e}")
         print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
+        Logger.critical(e)
 
 
 
