@@ -5,7 +5,7 @@
 <h2 align="center">📌 Основные особенности</h2>
 
 - Поддержка любых микроконтроллеров (ESP8266, Wemos, Arduino и др.)
-- Протокол MCIS (Microcontrollers Control and Interaction System)
+- Протокол MCIS (Microcontrollers Control and Interaction System) - прикладной протокол поверх UDP / TCP
 - Веб-интерфейс на Flask, HTML, JavaScript
 - Поддержка пользовательских HTML-страниц
 - Хранение данных в SQLite
