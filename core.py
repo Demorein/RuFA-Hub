@@ -6,6 +6,7 @@ import json
 import queue
 import threading
 import inspect
+import functools
 
 class Logger:
     def __init__(self, name: str, logfile: str = None):
@@ -34,9 +35,10 @@ class Logger:
     def exception(self, msg): self.logger.exception(msg)
 
 class setup_module():
-    def __init__(self):
+    def __init__(self, stop_queue:queue.Queue):
         self.module_names = self.collect_module_configs()
         self.Logger = Logger(__name__, "logs/core.log")
+        self.stop_Queue = stop_queue
 
     def collect_module_configs(self, path="./modules"):
         result = []
@@ -85,7 +87,7 @@ class setup_module():
 
                 # Запускаем поток с очередью
                 q = queue.Queue()
-                t = threading.Thread(target=mainloop, args=(q,), daemon=True)
+                t = threading.Thread(target=mainloop, args=((q, self.stop_Queue)), daemon=True)
                 t.start()
 
                 loop_queues.append({
@@ -97,11 +99,12 @@ class setup_module():
 
 
 class process_data:
-    def __init__(self, modules_queue, modules_json_param, my_queue):
+    def __init__(self, modules_queue, modules_json_param, my_queue, stop_queue:queue.Queue):
         self.modules_queue = modules_queue              # Очереди для loop-модулей
         self.modules_json_param = modules_json_param    # Данные о модулях
         self.my_queue = my_queue                        # Очередь входящих пакетов
         self.Logger = Logger(__name__, "core.log")
+        self.stop_queue = stop_queue
 
     def procces_data(self):
         while True:
@@ -123,7 +126,7 @@ class process_data:
     def send_data_to_module_queue(self, packet, target_id):
         for entry in self.modules_queue:
             if entry["id"] == target_id:
-                entry["queue"].put(packet)
+                entry["queue"].put((packet, self.stop_queue.get()))
                 break
 
     def send_data_to_module_once(self, packet, module_name):
@@ -140,6 +143,33 @@ class process_data:
             if module["module_name"] == name:
                 return module
         return None
+
+# loop decorator
+def loop_extensions():
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(data_queue, stop_queue):
+            while True:
+                # Проверяем стоп-флаг (без ожидания)
+                try:
+                    stop_flag = stop_queue.get(timeout=0.1)
+                    if stop_flag:
+                        break
+                except queue.Empty:
+                    pass
+
+                # Получаем данные с таймаутом, если нет — передаем None
+                try:
+                    data = data_queue.get(timeout=0.1)
+                except queue.Empty:
+                    data = None
+
+                func(data)
+
+        return wrapper
+    return decorator
+
+            
 
 
 if __name__ == "__main__":

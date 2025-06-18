@@ -1,9 +1,9 @@
-from core import Logger
+from core import Logger, loop_extensions
 from time import sleep
 
+logger = Logger(__name__, "logs/test1.log")
+
+@loop_extensions()
 def mainloop(data):
-    a = Logger(__name__, "logs/test1.log")
-    dataa = "asdasd"
-    while True:
-        sleep(1)
-        a.info(dataa)
+    logger.info("test1")
+    sleep(1)

@@ -4,8 +4,8 @@ import socket
 import json
 
 a = {
-     "module":"example_module_once",
-     "api":"4e6febd4826fb51cacfd2cb5702ec73b",
+     "module":"example_module_loop",
+     "api":"46fb95a876e6a83eadfcf2d8820f1421",
      "data":"Test Logs"
      }
 

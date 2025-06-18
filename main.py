@@ -36,6 +36,11 @@ from mcis.async_mcis_tcp import mcis_srv_tcp
 #Logger
 Logger = core.Logger(__name__, "logs/main.log")
 
+#Stop Queue
+stop_queue = queue.Queue()
+stop_queue.put(False)
+
+
 # Queue
 data_queue = queue.Queue()
 Logger.info("Initialization queue")
@@ -100,16 +105,16 @@ if __name__ == "__main__":
 
         #Init modules
         try:
-            setup_modules = core.setup_module()
+            setup_modules = core.setup_module(stop_queue=stop_queue)
             q_modules = setup_modules.setup()
             moduels_json_param = setup_modules.collect_module_configs()
 
-            process_data_init = core.process_data(modules_queue=q_modules, modules_json_param=moduels_json_param, my_queue=data_to_module_queue)
+            process_data_init = core.process_data(modules_queue=q_modules, modules_json_param=moduels_json_param, my_queue=data_to_module_queue, stop_queue=stop_queue)
             process_data_thread = threading.Thread(target=process_data_init.procces_data)
 
             Logger.info("Launch loop modules")
         except Exception as e:
-            Logger.error("Error in Init modules: {e}")
+            Logger.error(f"Error in Init modules: {e}")
 
         try:
             process_data_thread.start()
@@ -121,7 +126,9 @@ if __name__ == "__main__":
 
         while True:
             time.sleep(1)
+            stop_queue.put(False)
     except KeyboardInterrupt:
+        stop_queue.put(True)
         os.system("export FLASK_ENV=development")
 
         print("\n\n\nThe server is stopped by the user")
@@ -129,6 +136,7 @@ if __name__ == "__main__":
         Logger.info("The server is stopped by the user")
         
     except Exception as e:
+        stop_queue.put(True)
         print(f"\n\n--- Error! ---\n\n{e}")
         print(f"\n\nflask_host = {flask_host}\nMCIS_host = {server_host_udp}")
         Logger.critical(e)
