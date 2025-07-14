@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home_redirect():
-    return redirect(url_for("tvari_i_boba"))
+    return redirect(url_for("home"))
 
 @app.route("/home")
 def home():
@@ -15,11 +15,6 @@ def home():
 @app.route("/controllers")
 def controllers():
     return render_template("controllers.html")
-
-@app.route("/tvari_i_boba")
-def tvari_i_boba():
-    return render_template("gallery.html")
-
 
 #---------------------------------------------------------------
 # URL REQUESTS
