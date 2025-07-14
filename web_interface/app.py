@@ -44,12 +44,6 @@ def get_network_data():
     network_data = get_latest_network_data()
     return jsonify({"download": network_data["download"], "upload": network_data["upload"]})
 
-@app.route('/images')
-def list_images():
-    files = os.listdir('web_interface/static/images')
-    image_files = [f'/static/images/{f}' for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-    return jsonify(sorted(image_files))
-
 
 
 
