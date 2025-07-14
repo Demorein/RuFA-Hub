@@ -1,0 +1,29 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment folder
+rufa-venv/
+
+# Ignore distribution/build folders
+build/
+dist/
+*.egg-info/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore VSCode settings folder
+.vscode/
+
+# Ignore git files
+.git
+.gitignore
